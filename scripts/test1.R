@@ -14,7 +14,8 @@ read_count_output <- function(dir, name) {
   barcodes <- readLines(file(paste0(dir, "/", "barcodes.tsv")))
   colnames(m) <- barcodes
   rownames(m) <- genes
-  return(m)
+  return(genes)
+  
 }
 
 res_mat <- read_count_output("/Users/florin/Desktop/Thesis_work/Matrices/Sort/Real/kb-s701/SCD-TEST-s701-filtered-feature-bc-matrix", "matrix")

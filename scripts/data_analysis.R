@@ -1,51 +1,25 @@
-library(dplyr)
 library(Seurat)
-library(patchwork)
-library(Matrix)
-library(ggplot2)
-library(scico)
-library(scales)
+library(dplyr)
 
-read_count_output <- function(dir, name) {
-  dir <- normalizePath(dir, mustWork = TRUE)
-  m <- readMM(paste0(dir, "/", name, ".mtx"))
-  m <- Matrix::t(m)
-  m <- as(m, "CsparseMatrix")
-  # The matrix read has cells in rows
-  genes <- readLines(file(paste0(dir, "/", "features.tsv")))
-  barcodes <- readLines(file(paste0(dir, "/", "barcodes.tsv")))
-  colnames(m) <- barcodes
-  rownames(m) <- genes
-  return(m)
-}
+# Create a Seurat Object
+seu <- CreateSeuratObject(m, min.cells = 3, min.features = 200)
 
-res_mat <- read_count_output("/Users/florin/Desktop/Thesis_work/Matrices/Sort/Real/kb-s701/SCD-TEST-s701-filtered-feature-bc-matrix", "matrix")
-dim(res_mat)
-
-seu <- CreateSeuratObject(res_mat, min.cells = 3, min.features = 200)
-
-seu[["percent.mt"]] <- PercentageFeatureSet(seu, pattern = "^MT-")
+# Look for a specific gene pattern (in this case MT_ as a set of mitochondrial genes)
+seu[["percent.mt"]] <- PercentageFeatureSet(seu, pattern = "^MT")
 
 # Visualize QC metrics as a violin plot
 VlnPlot(seu, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
 
 # FeatureScatter is typically used to visualize feature-feature relationships, but can be used
 # for anything calculated by the object, i.e. columns in object metadata, PC scores etc.
-
 plot1 <- FeatureScatter(seu, feature1 = "nCount_RNA", feature2 = "percent.mt")
 plot2 <- FeatureScatter(seu, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
 plot1 + plot2
 
-seu <- subset(seu, subset = nFeature_RNA > 200 & nFeature_RNA < 2500 & percent.mt < 5)
-
 # NORMALIZING THE DATA 
-
 seu <- NormalizeData(seu, normalization.method = "LogNormalize", scale.factor = 10000)
 
-seu <- NormalizeData(seu)
-
 # IDENTIFICATION OF HIGHLY VARIABLE FEATURES (FEATURE SELECTION)
-
 seu <- FindVariableFeatures(seu, selection.method = "vst", nfeatures = 2000)
 
 # Identify the 10 most highly variable genes
@@ -56,13 +30,11 @@ plot1 <- VariableFeaturePlot(seu)
 plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
 plot1 + plot2
 
-# SCALING THE DATA 
-
+# SCALING THE DATA
 all.genes <- rownames(seu)
 seu <- ScaleData(seu, features = all.genes)
 
 # PERFORM LINEAR DIMENSIONAL REDUCTION
-
 seu <- RunPCA(seu, features = VariableFeatures(object = seu))
 
 # Examine and visualize PCA results a few different ways
@@ -76,8 +48,6 @@ DimHeatmap(seu, dims = 1, cells = 500, balanced = TRUE)
 
 DimHeatmap(seu, dims = 1:15, cells = 500, balanced = TRUE)
 
-# DETERMINE THE 'DIMENSIONALITY' OF THE DATASET
-
 # NOTE: This process can take a long time for big datasets, comment out for expediency. More
 # approximate techniques such as those implemented in ElbowPlot() can be used to reduce
 # computation time
@@ -88,15 +58,13 @@ JackStrawPlot(seu, dims = 1:15)
 
 ElbowPlot(seu)
 
-# CLUSTER THE CELLS
+# CLUSTERING THE CELLS
 
 seu <- FindNeighbors(seu, dims = 1:10)
 seu <- FindClusters(seu, resolution = 0.5)
 
 # Look at cluster IDs of the first 5 cells
 head(Idents(seu), 5)
-
-# RUN NON-LINEAR DIMENSIONAL REDUCTION (UMAP/tSNE)
 
 # If you haven't installed UMAP, you can do so via reticulate::py_install(packages =
 # 'umap-learn')
@@ -106,17 +74,25 @@ seu <- RunUMAP(seu, dims = 1:10)
 # individual clusters
 DimPlot(seu, reduction = "umap")
 
-saveRDS(seu, file = "../output/pbmc_tutorial.rds")
+seu <- RunTSNE(seu, dims = 1:10)
+DimPlot(seu, reduction = "tsne")
 
-# FINDING DIFFERENTIALLY EXPRESSED FEATURES (CLUSTER BIOMARKERS)
+# FINDING DIFFERENTIALLY EXPRESSED FEATURES (CLUSER BIOMARKERS)
 
 # find all markers of cluster 2
 cluster2.markers <- FindMarkers(seu, ident.1 = 2, min.pct = 0.25)
 head(cluster2.markers, n = 5)
 
-# find all markers distinguishing cluster 2s from clusters 0 and 1
-cluster5.markers <- FindMarkers(seu, ident.1 = 2, ident.2 = c(0, 1), min.pct = 0.25)
+# find all markers distinguishing cluster 5 from clusters 0 and 3
+cluster5.markers <- FindMarkers(seu, ident.1 = 5, ident.2 = c(0, 3), min.pct = 0.25)
 head(cluster5.markers, n = 5)
+
+# find markers for every cluster compared to all remaining cells, report only the positive
+# ones
+seu.markers <- FindAllMarkers(seu, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+seu.markers %>%
+  group_by(cluster) %>%
+  slice_max(n = 2, order_by = avg_log2FC)
 
 # find markers for every cluster compared to all remaining cells, report only the positive
 # ones
@@ -130,20 +106,51 @@ cluster0.markers <- FindMarkers(seu, ident.1 = 0, logfc.threshold = 0.25, test.u
 VlnPlot(seu, features = c("MS4A1", "CD79A"))
 
 # you can plot raw counts as well
-VlnPlot(seu, features = c("NKG7", "LEF1"), slot = "counts", log = TRUE)
+VlnPlot(seu, features = c("NKG7", "PF4"), slot = "counts", log = TRUE)
 
 
-FeaturePlot(seu, features = c("MS4A1", "GNLY", "CD3E", "FCGR3A", "LYZ", "CD8A"))
-
+FeaturePlot(seu, features = c("MS4A1", "GNLY", "CD3E", "CD14", "FCER1A", "FCGR3A", "LYZ", "PPBP",
+                               "CD8A"))
 
 seu.markers %>%
   group_by(cluster) %>%
   top_n(n = 10, wt = avg_log2FC) -> top10
 DoHeatmap(seu, features = top10$gene) + NoLegend()
 
-new.cluster.ids <- c("Naive CD4 T", "CD14+ Mono", "Memory CD4 T")
+
+
+new.cluster.ids <- c("Naive CD4 T", "CD14+ Mono", "Memory CD4 T", "B", "CD8 T", "FCGR3A+ Mono",
+                     "NK", "DC", "Platelet")
 names(new.cluster.ids) <- levels(seu)
 seu <- RenameIdents(seu, new.cluster.ids)
 DimPlot(seu, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend()
 
-saveRDS(seu, file = "../output/pbmc3k_final.rds")
+
+
+
+
+
+
+
+
+# TOTAL UMI COUNTS PER NUMBER OF GENES DETECTED
+options(repr.plot.width=9, repr.plot.height=6)
+ggplot(seu@meta.data, aes(nCount_RNA, nFeature_RNA)) +
+  geom_hex(bins = 100) +
+  scale_fill_scico(palette = "devon", direction = -1, end = 0.9) +
+  scale_x_log10(breaks = breaks_log(12)) + 
+  scale_y_log10(breaks = breaks_log(12)) + annotation_logticks() +
+  labs(x = "Total UMI counts", y = "Number of genes detected") +
+  theme(panel.grid.minor = element_blank())
+
+# TOTAL UMI COUNTS PER PERCENTAGE MITOCHONDRIAL
+ggplot(seu@meta.data, aes(nCount_RNA, percent.mt)) +
+  geom_pointdensity() +
+  scale_color_scico(palette = "devon", direction = -1, end = 0.9) +
+  labs(x = "Total UMI counts", y = "Percentage mitochondrial")
+
+# Histogram for nCount by PERCENTAGE MT
+ggplot(seu@meta.data, aes(percent.mt)) + geom_histogram()
+
+# Histogram for nCount by PERCENTAGE RP
+ggplot(seu@meta.data, aes(percent.rp)) + geom_histogram()
