@@ -2,19 +2,38 @@ library(Seurat)
 library(dplyr)
 
 # Create a Seurat Object
-seu <- CreateSeuratObject(m, min.cells = 3, min.features = 200)
+seu <- CreateSeuratObject(m)
 
 # Look for a specific gene pattern (in this case MT_ as a set of mitochondrial genes)
 seu[["percent.mt"]] <- PercentageFeatureSet(seu, pattern = "^MT")
+seu[["percent.rp"]] <- PercentageFeatureSet(seu, pattern = "^RP")
 
 # Visualize QC metrics as a violin plot
-VlnPlot(seu, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
+VlnPlot(seu, features = c("nFeature_RNA", "nCount_RNA", "percent.mt", "percent.rp"), ncol = 4)
 
 # FeatureScatter is typically used to visualize feature-feature relationships, but can be used
 # for anything calculated by the object, i.e. columns in object metadata, PC scores etc.
 plot1 <- FeatureScatter(seu, feature1 = "nCount_RNA", feature2 = "percent.mt")
-plot2 <- FeatureScatter(seu, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
-plot1 + plot2
+plot2 <- FeatureScatter(seu, feature1 = "nCount_RNA", feature2 = "percent.rp")
+plot3 <- FeatureScatter(seu, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
+plot1 + plot2 + plot3
+
+# ggplot version of plotting
+plot1 <- ggplot(seu[[]], aes (percent.mt, nCount_RNA)) + geom_point() + scale_y_log10()
+
+# Normalize the data
+seu <- NormalizeData(seu, normalization.method = "LogNormalize", scale.factor = 10000)
+
+# Scale the data
+all.genes <- rownames(seu)
+seu <- ScaleData(seu, features = all.genes)
+
+
+
+
+
+
+
 
 # NORMALIZING THE DATA 
 seu <- NormalizeData(seu, normalization.method = "LogNormalize", scale.factor = 10000)
@@ -154,3 +173,4 @@ ggplot(seu@meta.data, aes(percent.mt)) + geom_histogram()
 
 # Histogram for nCount by PERCENTAGE RP
 ggplot(seu@meta.data, aes(percent.rp)) + geom_histogram()
+
