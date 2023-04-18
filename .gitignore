@@ -2,3 +2,8 @@ data/
 docs/
 results/
 .DS_Store
+.Rproj.user
+.Rprofile
+r_project.Rproj
+renv/
+*.html

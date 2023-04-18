@@ -1,4 +1,4 @@
-library(seurat)
+library(Seurat)
 library(dplyr)
 
 # Create a seu_afrat Object

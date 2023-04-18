@@ -29,8 +29,6 @@ data_analysis <- function(sparse_matrix) {
   
   feature_plot_1_ggplot <- ggplot(seu[[]], aes (percent.mt, nCount_RNA)) + geom_point() + scale_y_log10()
   
-  
-  
   # UMIs per cell
   umis_per_cell <- ggplot(seu[[]], aes (nCount_RNA)) + geom_histogram(bins = 30) + scale_x_log10()
   
@@ -50,8 +48,6 @@ data_analysis <- function(sparse_matrix) {
     labs(x = "Percentage Mitochondrial", y = "Total UMI Counts") +
     scale_y_log10()
   
-  
-  
   # Normalize the data
   seu <- NormalizeData(seu, normalization.method = "LogNormalize", scale.factor = 10000)
   
@@ -64,6 +60,8 @@ data_analysis <- function(sparse_matrix) {
   
   # Identify the 10 most highly variable genes
   top10 <- head(VariableFeatures(seu), 10)
+  plot1 <- VariableFeaturePlot(seu, log = FALSE)
+  LabelPoints(plot = plot1, points = top10, repel = TRUE)
   
   # Scaling the data
   all.genes <- rownames(seu)
@@ -71,10 +69,150 @@ data_analysis <- function(sparse_matrix) {
   
   # Perform Linear Dimensional reduction
   seu <- RunPCA(seu, features = VariableFeatures(object = seu))
+  elbow_plot <- ElbowPlot(seu, ndims = 20)
   
-  print(seu[[pca]], dims = 1:5, nfeatures = 5)
+  print(seu[["pca"]], dims = 1:5, nfeatures = 5)
+  
+  # Clustering and visualization
+  seu <- FindNeighbors(seu, dims = 1:10)
+  seu <- FindClusters(seu)
+  pca_plot <- PCAPlot(seu)
+  
+  # tSNE
+  seu <- RunTSNE(seu, dims = 1:10)
+  tsne_plot <- TSNEPlot(seu)
+  
+  # UMAP
+  seu <- RunUMAP(seu, dims = 1:10, verbose = FALSE)
+  umap_plot <- UMAPPlot(seu)
   
   
-  return(list(violin_plot_1, feature_plot_1, feature_plot_2, feature_plot_3, feature_plot_1_ggplot, umis_per_cell, genes_per_cell,  mitochondrial_genes_per_cell, ribosomal_genes_per_cell, umi_vs_mito))
+  return(list(violin_plot_1, feature_plot_1, feature_plot_2, feature_plot_3, feature_plot_1_ggplot, umis_per_cell, genes_per_cell,  mitochondrial_genes_per_cell, ribosomal_genes_per_cell, umi_vs_mito, elbow_plot, pca_plot, tsne_plot, umap_plot))
+  
+}
+
+combine_datasets <- function(m1, m2, m3) {
+  
+  m1_seu <- CreateSeuratObject(m1, project = 'ss1')
+  m2_seu <- CreateSeuratObject(m2, project = 'ss2')
+  m3_seu <- CreateSeuratObject(m3, project = 'ss3')
+  
+  seu_combined <- merge(m1_seu, y = c(m2_seu, m3_seu), add.cell.ids = c("ss1", "ss2", "ss3"))
+  
+  m1_seu[['percent.mt']] <- PercentageFeatureSet(m1_seu, pattern = "^MT")
+  m1_seu[["percent.rp"]] <- PercentageFeatureSet(m1_seu, pattern = "^RP")
+  
+  m2_seu[['percent.mt']] <- PercentageFeatureSet(m2_seu, pattern = "^MT")
+  m2_seu[["percent.rp"]] <- PercentageFeatureSet(m2_seu, pattern = "^RP")
+  
+  m3_seu[['percent.mt']] <- PercentageFeatureSet(m3_seu, pattern = "^MT")
+  m3_seu[["percent.rp"]] <- PercentageFeatureSet(m3_seu, pattern = "^RP")
+  
+  seu_combined[['percent.mt']] <- PercentageFeatureSet(seu_combined, pattern = "^MT")
+  seu_combined[["percent.rp"]] <- PercentageFeatureSet(seu_combined, pattern = "^RP")
+  
+  # QUALITY METIRCS
+  
+  # UMIs per cell
+  umis_per_cell <- ggplot(seu_combined[[]], aes (nCount_RNA)) + geom_histogram(bins = 30) + scale_x_log10()
+  umis_per_cell1 <- ggplot(m1_seu[[]], aes (nCount_RNA)) + geom_histogram(bins = 30) + scale_x_log10()
+  umis_per_cell2 <- ggplot(m2_seu[[]], aes (nCount_RNA)) + geom_histogram(bins = 30) + scale_x_log10()
+  umis_per_cell3 <- ggplot(m3_seu[[]], aes (nCount_RNA)) + geom_histogram(bins = 30) + scale_x_log10()
+  umis_per_cell_combined <- umis_per_cell1 + umis_per_cell2 + umis_per_cell3 + umis_per_cell
+  
+  # Genes per cell
+  genes_per_cell <- ggplot(seu_combined[[]], aes (nFeature_RNA)) + geom_histogram(bins = 30) + scale_x_log10()
+  genes_per_cell1 <- ggplot(m1_seu[[]], aes (nFeature_RNA)) + geom_histogram(bins = 30) + scale_x_log10()
+  genes_per_cell2 <- ggplot(m2_seu[[]], aes (nFeature_RNA)) + geom_histogram(bins = 30) + scale_x_log10()
+  genes_per_cell3 <- ggplot(m3_seu[[]], aes (nFeature_RNA)) + geom_histogram(bins = 30) + scale_x_log10()
+  genes_per_cell_combined <- genes_per_cell1 + genes_per_cell2 + genes_per_cell3 + genes_per_cell
+  
+  # Mitochondrial genes per cell
+  mitochondrial_genes_per_cell <- ggplot(seu_combined[[]], aes (percent.mt)) + geom_histogram(bins = 30)
+  mitochondrial_genes_per_cell1 <- ggplot(m1_seu[[]], aes (percent.mt)) + geom_histogram(bins = 30)
+  mitochondrial_genes_per_cell2 <- ggplot(m2_seu[[]], aes (percent.mt)) + geom_histogram(bins = 30)
+  mitochondrial_genes_per_cell3 <- ggplot(m3_seu[[]], aes (percent.mt)) + geom_histogram(bins = 30)
+  mitochondrial_genes_per_cell_combined <- mitochondrial_genes_per_cell1 + mitochondrial_genes_per_cell2 + mitochondrial_genes_per_cell3 + mitochondrial_genes_per_cell
+  
+  # Ribosomal genes per cell
+  ribosomal_genes_per_cell <- ggplot(seu_combined[[]], aes (percent.rp)) + geom_histogram(bins = 30) + xlim(0, 100)
+  ribosomal_genes_per_cell1 <- ggplot(m1_seu[[]], aes (percent.rp)) + geom_histogram(bins = 30) + xlim(0, 100)
+  ribosomal_genes_per_cell2 <- ggplot(m2_seu[[]], aes (percent.rp)) + geom_histogram(bins = 30) + xlim(0, 100)
+  ribosomal_genes_per_cell3 <- ggplot(m3_seu[[]], aes (percent.rp)) + geom_histogram(bins = 30) + xlim(0, 100)
+  ribosomal_genes_per_cell_combined <- ribosomal_genes_per_cell1 + ribosomal_genes_per_cell2 + ribosomal_genes_per_cell3 + ribosomal_genes_per_cell
+  
+  # TOTAL UMI COUNTS PER PERCENTAGE MITOCHONDRIAL
+  umi_vs_mito1 <- ggplot(m1_seu@meta.data, aes(percent.mt, nCount_RNA)) +
+    geom_pointdensity() +
+    scale_color_scico(palette = "devon", direction = -1, end = 0.9) +
+    labs(x = "Percentage Mitochondrial", y = "Total UMI Counts") +
+    scale_y_log10()
+  umi_vs_mito2 <- ggplot(m2_seu@meta.data, aes(percent.mt, nCount_RNA)) +
+    geom_pointdensity() +
+    #scale_color_scico(palette = "devon", direction = -1, end = 0.9) +
+    labs(x = "Percentage Mitochondrial", y = "Total UMI Counts") +
+    scale_y_log10()
+  umi_vs_mito3 <- ggplot(m3_seu@meta.data, aes(percent.mt, nCount_RNA)) +
+    geom_pointdensity() +
+    scale_color_scico(palette = "devon", direction = -1, end = 0.9) +
+    labs(x = "Percentage Mitochondrial", y = "Total UMI Counts") +
+    scale_y_log10()
+  umi_vs_mito <- ggplot(seu_combined@meta.data, aes(percent.mt, nCount_RNA)) +
+    geom_pointdensity() +
+    scale_color_scico(palette = "devon", direction = -1, end = 0.9) +
+    labs(x = "Percentage Mitochondrial", y = "Total UMI Counts") +
+    scale_y_log10()
+  umi_vs_mito_combined <- umi_vs_mito1 + umi_vs_mito2 + umi_vs_mito3 + umi_vs_mito
+  
+  # PROCESSING
+  
+  # Normalize the data
+  seu_combined <- NormalizeData(seu_combined, normalization.method = "LogNormalize", scale.factor = 10000)
+  
+  # Scale the data
+  all.genes <- rownames(seu_combined)
+  seu_combined <- ScaleData(seu_combined, features = all.genes)
+  
+  # IDENTIFICATION OF HIGHLY VARIABLE FEATURES (FEATURE SELECTION)
+  seu_combined <- FindVariableFeatures(seu_combined, selection.method = "vst", nfeatures = 2000)
+  
+  # Identify the 10 most highly variable genes
+  top10 <- head(VariableFeatures(seu_combined), 10)
+  plot1 <- VariableFeaturePlot(seu_combined, log = FALSE)
+  LabelPoints(plot = plot1, points = top10, repel = TRUE)
+  
+  # Scaling the data
+  all.genes <- rownames(seu_combined)
+  seu_combined <- ScaleData(seu_combined, features = all.genes)
+  
+  # Perform Linear Dimensional reduction
+  seu_combined <- RunPCA(seu_combined, features = VariableFeatures(object = seu_combined))
+  elbow_plot <- ElbowPlot(seu_combined, ndims = 20)
+  
+  print(seu_combined[["pca"]], dims = 1:5, nfeatures = 5)
+  
+  # Clustering and visualization
+  seu_combined <- FindNeighbors(seu_combined, dims = 1:10)
+  seu_combined <- FindClusters(seu_combined)
+  pca_plot <- PCAPlot(seu_combined)
+  
+  # tSNE
+  seu_combined <- RunTSNE(seu_combined, dims = 1:10)
+  tsne_plot <- DimPlot(object = seu_combined, reduction = 'tsne', group.by = 'orig.ident', cols = c('ss1' = 'indianred1', 'ss2' = 'royalblue1', 'ss3' = 'lightgreen'))
+  tsne1_plot <- DimPlot(object = seu_combined, reduction = 'tsne', group.by = 'orig.ident', cols = c('ss1' = 'indianred1', 'ss2' = adjustcolor('grey87', alpha.f = 1), 'ss3' = adjustcolor('grey87', alpha.f = 1)))
+  tsne2_plot <- DimPlot(object = seu_combined, reduction = 'tsne', group.by = 'orig.ident', cols = c('ss1' = 'grey87', 'ss2' = 'royalblue1', 'ss3' = 'grey87'))
+  tsne3_plot <- DimPlot(object = seu_combined, reduction = 'tsne', group.by = 'orig.ident', cols = c('ss1' = 'grey87', 'ss2' = 'grey87', 'ss3' = 'lightgreen'))
+  tsne_all <- tsne1_plot + tsne2_plot + tsne3_plot + tsne_plot
+  
+  # UMAP
+  seu_combined <- RunUMAP(seu_combined, dims = 1:10, verbose = FALSE)
+  umap_plot <- DimPlot(object = seu_combined, reduction = 'umap', group.by = 'orig.ident', cols = c('ss1' = 'indianred1', 'ss2' = 'royalblue1', 'ss3' = 'lightgreen'))
+  umap_ss1 <- DimPlot(object = seu_combined, reduction = 'umap', group.by = 'orig.ident', cols = c('ss1' = 'indianred1', 'ss2' = adjustcolor('grey87', alpha.f = 1), 'ss3' = adjustcolor('grey87', alpha.f = 1)))
+  umap_ss2 <- DimPlot(object = seu_combined, reduction = 'umap', group.by = 'orig.ident', cols = c('ss1' = 'grey87', 'ss2' = 'royalblue1', 'ss3' = 'grey87'))
+  umap_ss3 <- DimPlot(object = seu_combined, reduction = 'umap', group.by = 'orig.ident', cols = c('ss1' = 'grey87', 'ss2' = 'grey87', 'ss3' = 'lightgreen'))
+  umap_all <- umap_ss1 + umap_ss2 + umap_ss3 + umap_plot
+  
+  #return(list(umis_per_cell,genes_per_cell,mitochondrial_genes_per_cell,ribosomal_genes_per_cell, umi_vs_mito, elbow_plot, pca_plot, tsne_plot, umap_plot, umap_plot_2))
+  return(list(umis_per_cell_combined, genes_per_cell_combined, mitochondrial_genes_per_cell_combined, ribosomal_genes_per_cell_combined, umi_vs_mito_combined, tsne_all, umap_all))
   
 }

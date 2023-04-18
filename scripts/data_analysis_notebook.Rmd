@@ -202,9 +202,9 @@ data_analysis_ss <- data_analysis(ss_dataset)
 ```
 
 ```{r}
-data_analysis_af[[8]]
-data_analysis_kb[[8]]
-data_analysis_ss[[8]]
+data_analysis_af[[11]]
+data_analysis_kb[[11]]
+data_analysis_ss[[11]]
 ```
 ```{r}
 data_analysis_kb[[3]]
