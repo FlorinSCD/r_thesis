@@ -7,3 +7,5 @@ results/
 r_project.Rproj
 renv/
 *.html
+.RDataTmp
+.Rhistory

@@ -36,6 +36,7 @@ load_af <- function(dir) {
   # The matrix read has cells in rows
   genes_df <- read.table(file(paste0(dir, "/", "features.tsv")))
   barcodes <- read.table(file(paste0(dir, "/", "barcodes.tsv")))
+  features_txt <- read.table(file(paste0(dir, "/", "feature.txt")))
   
   gene_mapping <- read.csv(file("/Users/florin/Desktop/Thesis_work/r_project/data/gene_mapping_modified.csv"))
   
@@ -63,11 +64,15 @@ load_af <- function(dir) {
   colnames(m) <- barcodes
   rownames(m) <- genes_vector
   
-  return(m)
+  mapping_rate <- sum(features_txt[1:290,3:3])/sum(features_txt[1:290,2:2])
+  
+  return(list(m, mapping_rate))
   
 }
 
 load_kb <- function(dir) {
+  
+  library("rjson")
   
   dir <- normalizePath(dir, mustWork = TRUE)
   m <- readMM(paste0(dir, "/matrix.mtx"))
@@ -77,6 +82,9 @@ load_kb <- function(dir) {
   # The matrix read has cells in rows
   genes_df <- read.table(file(paste0(dir, "/", "features.tsv")))
   barcodes <- read.table(file(paste0(dir, "/", "barcodes.tsv")))
+  features <- fromJSON(file=(paste0(dir, "/", "run_info.json")))
+  
+  features <- as.data.frame(features)
   
   gene_mapping <- read.csv(file("/Users/florin/Desktop/Thesis_work/r_project/data/gene_mapping_modified.csv"))
   
@@ -108,6 +116,8 @@ load_kb <- function(dir) {
   colnames(m) <- barcodes
   rownames(m) <- genes_vector
   
-  return(m)
+  mapping_rate <- features$p_pseudoaligned
+  
+  return(list(m, mapping_rate))
   
 }

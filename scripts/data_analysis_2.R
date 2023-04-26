@@ -127,12 +127,6 @@ DimPlot(seu_af, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend()
 
 
 
-
-
-
-
-
-
 # TOTAL UMI COUNTS PER NUMBER OF GENES DETECTED
 options(repr.plot.width=9, repr.plot.height=6)
 ggplot(seu_af@meta.data, aes(nCount_RNA, nFeature_RNA)) +
