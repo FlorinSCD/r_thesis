@@ -149,32 +149,37 @@ combine_datasets <- function(m1, m2, m3) {
   # QUALITY METIRCS
   
   # UMIs per cell
-  umis_per_cell <- ggplot(seu_combined[[]], aes (nCount_RNA)) + geom_histogram(bins = 80) + scale_x_log10() + ggtitle("Count of UMIs per Cell \nS701, S702 and S703 Combined") + ylab("Count") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
-  umis_per_cell1 <- ggplot(m1_seu[[]], aes (nCount_RNA)) + geom_histogram(bins = 80) + scale_x_log10() + ggtitle("Count of UMIs per Cell - S701") + ylab("Count") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
-  umis_per_cell2 <- ggplot(m2_seu[[]], aes (nCount_RNA)) + geom_histogram(bins = 80) + scale_x_log10() + ggtitle("Count of UMIs per Cell - S702") + ylab("Count") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
-  umis_per_cell3 <- ggplot(m3_seu[[]], aes (nCount_RNA)) + geom_histogram(bins = 80) + scale_x_log10() + ggtitle("Count of UMIs per Cell - S703") + ylab("Count") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
-  umis_per_cell_combined <- umis_per_cell1 + umis_per_cell2 + umis_per_cell3 + umis_per_cell
   
+  umis_per_cell <- ggplot(seu_combined[[]], aes (nCount_RNA)) + geom_histogram(bins = 80) + scale_x_log10() + ggtitle("Count of UMIs per Cell \nS701, S702 and S703 Combined") + ylab("Count") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  umis_per_cell1 <- ggplot(m1_seu[[]], aes (nCount_RNA)) + geom_histogram(bins = 80) + scale_x_log10() + ggtitle("Count of UMIs per Cell - S701") + ylab("Count") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  umis_per_cell2 <- ggplot(m2_seu[[]], aes (nCount_RNA)) + geom_histogram(bins = 80) + scale_x_log10() + ggtitle("Count of UMIs per Cell - S702") + ylab("Count") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  umis_per_cell3 <- ggplot(m3_seu[[]], aes (nCount_RNA)) + geom_histogram(bins = 80) + scale_x_log10() + ggtitle("Count of UMIs per Cell - S703") + ylab("Count") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  umis_per_cell_combined <- umis_per_cell1 + umis_per_cell2 + umis_per_cell3 + umis_per_cell
+  ggsave("results/umis_per_cell_combined_test.png", umis_per_cell_combined, width = 2560, height = 1369, units = c("px"))
+
   # Genes per cell
-  genes_per_cell <- ggplot(seu_combined[[]], aes (nFeature_RNA)) + geom_histogram(bins = 80) + scale_x_log10() + ggtitle("Count of Genes per Cell \nS701, S702 and S703 Combined") + ylab("Count") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
-  genes_per_cell1 <- ggplot(m1_seu[[]], aes (nFeature_RNA)) + geom_histogram(bins = 80) + scale_x_log10() + ggtitle("Count of Genes per Cell - S701") + ylab("Count") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
-  genes_per_cell2 <- ggplot(m2_seu[[]], aes (nFeature_RNA)) + geom_histogram(bins = 80) + scale_x_log10() + ggtitle("Count of Genes per Cell - S702") + ylab("Count") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
-  genes_per_cell3 <- ggplot(m3_seu[[]], aes (nFeature_RNA)) + geom_histogram(bins = 80) + scale_x_log10() + ggtitle("Count of Genes per Cell - S703") + ylab("Count") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
+  genes_per_cell <- ggplot(seu_combined[[]], aes (nFeature_RNA)) + geom_histogram(bins = 80) + scale_x_log10() + ggtitle("Count of Genes per Cell \nS701, S702 and S703 Combined") + ylab("Count") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  genes_per_cell1 <- ggplot(m1_seu[[]], aes (nFeature_RNA)) + geom_histogram(bins = 80) + scale_x_log10() + ggtitle("Count of Genes per Cell - S701") + ylab("Count") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  genes_per_cell2 <- ggplot(m2_seu[[]], aes (nFeature_RNA)) + geom_histogram(bins = 80) + scale_x_log10() + ggtitle("Count of Genes per Cell - S702") + ylab("Count") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  genes_per_cell3 <- ggplot(m3_seu[[]], aes (nFeature_RNA)) + geom_histogram(bins = 80) + scale_x_log10() + ggtitle("Count of Genes per Cell - S703") + ylab("Count") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
   genes_per_cell_combined <- genes_per_cell1 + genes_per_cell2 + genes_per_cell3 + genes_per_cell
+  ggsave("results/genes_per_cell_combined.png", genes_per_cell_combined, width = 2560, height = 1369, units = c("px"))
   
   # Mitochondrial genes per cell
-  mitochondrial_genes_per_cell <- ggplot(seu_combined[[]], aes (percent.mt)) + geom_histogram(bins = 80) + xlim(0, 100) + ggtitle("Count of Mitochondrial Genes per Cell \nS701, S702 and S703 Combined") + xlab("Mitochondrial Genes Percentage") + ylab("Count") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
-  mitochondrial_genes_per_cell1 <- ggplot(m1_seu[[]], aes (percent.mt)) + geom_histogram(bins = 80) + xlim(0, 100) + ggtitle("Count of Mitochondrial Genes per Cell - S701") + xlab("Mitochondrial Genes Percentage") + ylab("Count") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
-  mitochondrial_genes_per_cell2 <- ggplot(m2_seu[[]], aes (percent.mt)) + geom_histogram(bins = 80) + xlim(0, 100) + ggtitle("Count of Mitochondrial Genes per Cell - S702") + xlab("Mitochondrial Genes Percentage") + ylab("Count") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
-  mitochondrial_genes_per_cell3 <- ggplot(m3_seu[[]], aes (percent.mt)) + geom_histogram(bins = 80) + xlim(0, 100) + ggtitle("Count of Mitochondrial Genes per Cell - S703") + xlab("Mitochondrial Genes Percentage") + ylab("Count") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
+  mitochondrial_genes_per_cell <- ggplot(seu_combined[[]], aes (percent.mt)) + geom_histogram(bins = 80) + xlim(0, 100) + ggtitle("Count of Mitochondrial Genes per Cell \nS701, S702 and S703 Combined") + xlab("Mitochondrial Genes Percentage") + ylab("Count") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  mitochondrial_genes_per_cell1 <- ggplot(m1_seu[[]], aes (percent.mt)) + geom_histogram(bins = 80) + xlim(0, 100) + ggtitle("Count of Mitochondrial Genes per Cell - S701") + xlab("Mitochondrial Genes Percentage") + ylab("Count") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  mitochondrial_genes_per_cell2 <- ggplot(m2_seu[[]], aes (percent.mt)) + geom_histogram(bins = 80) + xlim(0, 100) + ggtitle("Count of Mitochondrial Genes per Cell - S702") + xlab("Mitochondrial Genes Percentage") + ylab("Count") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  mitochondrial_genes_per_cell3 <- ggplot(m3_seu[[]], aes (percent.mt)) + geom_histogram(bins = 80) + xlim(0, 100) + ggtitle("Count of Mitochondrial Genes per Cell - S703") + xlab("Mitochondrial Genes Percentage") + ylab("Count") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
   mitochondrial_genes_per_cell_combined <- mitochondrial_genes_per_cell1 + mitochondrial_genes_per_cell2 + mitochondrial_genes_per_cell3 + mitochondrial_genes_per_cell 
+  ggsave("results/mitochondrial_genes_per_cell_combined.png", mitochondrial_genes_per_cell_combined, width = 2560, height = 1369, units = c("px"))
   
   # Ribosomal genes per cell
-  ribosomal_genes_per_cell <- ggplot(seu_combined[[]], aes (percent.rp)) + geom_histogram(bins = 80) + xlim(0, 100) + ggtitle("Count of Ribosomal Genes per Cell \nS701, S702 and S703 Combined") + xlab("Ribosomal Genes Percentage") + ylab("Count") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
-  ribosomal_genes_per_cell1 <- ggplot(m1_seu[[]], aes (percent.rp)) + geom_histogram(bins = 80) + xlim(0, 100) + ggtitle("Count of Ribosomal Genes per Cell - S701") + xlab("Ribosomal Genes Percentage") + ylab("Count") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
-  ribosomal_genes_per_cell2 <- ggplot(m2_seu[[]], aes (percent.rp)) + geom_histogram(bins = 80) + xlim(0, 100) + ggtitle("Count of Ribosomal Genes per Cell - S702") + xlab("Ribosomal Genes Percentage") + ylab("Count") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
-  ribosomal_genes_per_cell3 <- ggplot(m3_seu[[]], aes (percent.rp)) + geom_histogram(bins = 80) + xlim(0, 100) + ggtitle("Count of Ribosomal Genes per Cell - S703") + xlab("Ribosomal Genes Percentage") + ylab("Count") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
+  ribosomal_genes_per_cell <- ggplot(seu_combined[[]], aes (percent.rp)) + geom_histogram(bins = 80) + xlim(0, 100) + ggtitle("Count of Ribosomal Genes per Cell \nS701, S702 and S703 Combined") + xlab("Ribosomal Genes Percentage") + ylab("Count") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  ribosomal_genes_per_cell1 <- ggplot(m1_seu[[]], aes (percent.rp)) + geom_histogram(bins = 80) + xlim(0, 100) + ggtitle("Count of Ribosomal Genes per Cell - S701") + xlab("Ribosomal Genes Percentage") + ylab("Count") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  ribosomal_genes_per_cell2 <- ggplot(m2_seu[[]], aes (percent.rp)) + geom_histogram(bins = 80) + xlim(0, 100) + ggtitle("Count of Ribosomal Genes per Cell - S702") + xlab("Ribosomal Genes Percentage") + ylab("Count") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  ribosomal_genes_per_cell3 <- ggplot(m3_seu[[]], aes (percent.rp)) + geom_histogram(bins = 80) + xlim(0, 100) + ggtitle("Count of Ribosomal Genes per Cell - S703") + xlab("Ribosomal Genes Percentage") + ylab("Count") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
   ribosomal_genes_per_cell_combined <- ribosomal_genes_per_cell1 + ribosomal_genes_per_cell2 + ribosomal_genes_per_cell3 + ribosomal_genes_per_cell
+  ggsave("results/ribosomal_genes_per_cell_combined.png", ribosomal_genes_per_cell_combined, width = 2560, height = 1369, units = c("px"))
   
   # TOTAL UMI COUNTS PER PERCENTAGE MITOCHONDRIAL
   umi_vs_mito1 <- ggplot(m1_seu@meta.data, aes(percent.mt, nCount_RNA)) +
@@ -182,30 +187,31 @@ combine_datasets <- function(m1, m2, m3) {
     scale_color_scico(palette = "devon", direction = -1, end = 0.9) +
     labs(x = "Percentage Mitochondrial", y = "Total UMI Counts") +
     ggtitle("Total UMI Counts per Percentage Mitochondrial - s701") +
-    theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5)) +
+    theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5)) +
     scale_y_log10()
   umi_vs_mito2 <- ggplot(m2_seu@meta.data, aes(percent.mt, nCount_RNA)) +
     geom_pointdensity() +
     scale_color_scico(palette = "devon", direction = -1, end = 0.9) +
     labs(x = "Percentage Mitochondrial", y = "Total UMI Counts") +
     ggtitle("Total UMI Counts per Percentage Mitochondrial - s702") +
-    theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5)) +
+    theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5)) +
     scale_y_log10()
   umi_vs_mito3 <- ggplot(m3_seu@meta.data, aes(percent.mt, nCount_RNA)) +
     geom_pointdensity() +
     scale_color_scico(palette = "devon", direction = -1, end = 0.9) +
     labs(x = "Percentage Mitochondrial", y = "Total UMI Counts") +
     ggtitle("Total UMI Counts per Percentage Mitochondrial - s703") +
-    theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5)) +
+    theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5)) +
     scale_y_log10()
   umi_vs_mito <- ggplot(seu_combined@meta.data, aes(percent.mt, nCount_RNA)) +
     geom_pointdensity() +
     scale_color_scico(palette = "devon", direction = -1, end = 0.9) +
     labs(x = "Percentage Mitochondrial", y = "Total UMI Counts") +
     ggtitle("Total UMI Counts per Percentage Mitochondrial -\n s701, s702 and s703 Combined") +
-    theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5)) +
+    theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5)) +
     scale_y_log10()
   umi_vs_mito_combined <- umi_vs_mito1 + umi_vs_mito2 + umi_vs_mito3 + umi_vs_mito
+  ggsave("results/umi_vs_mito_combined.png", umi_vs_mito_combined, width = 2560, height = 1369, units = c("px"))
   
   # PROCESSING
   
@@ -230,35 +236,37 @@ combine_datasets <- function(m1, m2, m3) {
   
   # Perform Linear Dimensional reduction
   seu_combined <- RunPCA(seu_combined, features = VariableFeatures(object = seu_combined))
-  elbow_plot <- ElbowPlot(seu_combined, ndims = 20) + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5)) 
+  png(filename = "results/elbow_plot.png", width = 2560, height = 1369, units = "px")
+  elbow_plot <- ElbowPlot(seu_combined, ndims = 20) + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  dev.off()
   
   print(seu_combined[["pca"]], dims = 1:5, nfeatures = 5)
   
   # Clustering and visualization
   seu_combined <- FindNeighbors(seu_combined, dims = 1:10)
   seu_combined <- FindClusters(seu_combined)
-  pca_plot <- PCAPlot(seu_combined) + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5)) 
+  pca_plot <- PCAPlot(seu_combined) + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5)) 
   
   # tSNE per Library
   seu_combined <- RunTSNE(seu_combined, dims = 1:10)
-  tsne_plot <- DimPlot(object = seu_combined, reduction = 'tsne', group.by = 'orig.ident', cols = c('ss1' = 'indianred1', 'ss2' = 'royalblue1', 'ss3' = 'lightgreen')) + ggtitle("tSNE of S701, S702 and S703 Combined") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
-  tsne1_plot <- DimPlot(object = seu_combined, reduction = 'tsne', group.by = 'orig.ident', cols = c('ss1' = 'indianred1', 'ss2' = adjustcolor('grey87', alpha.f = 1), 'ss3' = adjustcolor('grey87', alpha.f = 1))) + ggtitle("tSNE of Highlighted s701 Dataset") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
-  tsne2_plot <- DimPlot(object = seu_combined, reduction = 'tsne', group.by = 'orig.ident', cols = c('ss1' = 'grey87', 'ss2' = 'royalblue1', 'ss3' = 'grey87')) + ggtitle("tSNE of Highlighted s702 Dataset") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
-  tsne3_plot <- DimPlot(object = seu_combined, reduction = 'tsne', group.by = 'orig.ident', cols = c('ss1' = 'grey87', 'ss2' = 'grey87', 'ss3' = 'lightgreen')) + ggtitle("tSNE of Highlighted s703 Dataset") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
+  tsne_plot <- DimPlot(object = seu_combined, reduction = 'tsne', group.by = 'orig.ident', cols = c('ss1' = 'indianred1', 'ss2' = 'royalblue1', 'ss3' = 'lightgreen')) + ggtitle("tSNE of S701, S702 and S703 Combined") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  tsne1_plot <- DimPlot(object = seu_combined, reduction = 'tsne', group.by = 'orig.ident', cols = c('ss1' = 'indianred1', 'ss2' = adjustcolor('grey87', alpha.f = 1), 'ss3' = adjustcolor('grey87', alpha.f = 1))) + ggtitle("tSNE of Highlighted s701 Dataset") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  tsne2_plot <- DimPlot(object = seu_combined, reduction = 'tsne', group.by = 'orig.ident', cols = c('ss1' = 'grey87', 'ss2' = 'royalblue1', 'ss3' = 'grey87')) + ggtitle("tSNE of Highlighted s702 Dataset") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  tsne3_plot <- DimPlot(object = seu_combined, reduction = 'tsne', group.by = 'orig.ident', cols = c('ss1' = 'grey87', 'ss2' = 'grey87', 'ss3' = 'lightgreen')) + ggtitle("tSNE of Highlighted s703 Dataset") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
   tsne_all <- tsne1_plot + tsne2_plot + tsne3_plot + tsne_plot
   
   # UMAP per Library
   seu_combined <- RunUMAP(seu_combined, dims = 1:10, verbose = FALSE)
-  umap_plot <- DimPlot(object = seu_combined, reduction = 'umap', group.by = 'orig.ident', cols = c('ss1' = 'indianred1', 'ss2' = 'royalblue1', 'ss3' = 'lightgreen')) + ggtitle("UMAP of S701, S702 and S703 Combined") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
-  umap_ss1 <- DimPlot(object = seu_combined, reduction = 'umap', group.by = 'orig.ident', cols = c('ss1' = 'indianred1', 'ss2' = adjustcolor('grey87', alpha.f = 1), 'ss3' = adjustcolor('grey87', alpha.f = 1))) + ggtitle("UMAP of Highlighted S701 Dataset") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
-  umap_ss2 <- DimPlot(object = seu_combined, reduction = 'umap', group.by = 'orig.ident', cols = c('ss1' = 'grey87', 'ss2' = 'royalblue1', 'ss3' = 'grey87')) + ggtitle("UMAP of Highlighted S702 Dataset") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
-  umap_ss3 <- DimPlot(object = seu_combined, reduction = 'umap', group.by = 'orig.ident', cols = c('ss1' = 'grey87', 'ss2' = 'grey87', 'ss3' = 'lightgreen'))  + ggtitle("UMAP of Highlighted S703 Dataset") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
+  umap_plot <- DimPlot(object = seu_combined, reduction = 'umap', group.by = 'orig.ident', cols = c('ss1' = 'indianred1', 'ss2' = 'royalblue1', 'ss3' = 'lightgreen')) + ggtitle("UMAP of S701, S702 and S703 Combined") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  umap_ss1 <- DimPlot(object = seu_combined, reduction = 'umap', group.by = 'orig.ident', cols = c('ss1' = 'indianred1', 'ss2' = adjustcolor('grey87', alpha.f = 1), 'ss3' = adjustcolor('grey87', alpha.f = 1))) + ggtitle("UMAP of Highlighted S701 Dataset") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  umap_ss2 <- DimPlot(object = seu_combined, reduction = 'umap', group.by = 'orig.ident', cols = c('ss1' = 'grey87', 'ss2' = 'royalblue1', 'ss3' = 'grey87')) + ggtitle("UMAP of Highlighted S702 Dataset") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  umap_ss3 <- DimPlot(object = seu_combined, reduction = 'umap', group.by = 'orig.ident', cols = c('ss1' = 'grey87', 'ss2' = 'grey87', 'ss3' = 'lightgreen'))  + ggtitle("UMAP of Highlighted S703 Dataset") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
   umap_all <- umap_ss1 + umap_ss2 + umap_ss3 + umap_plot
   
   # CLUSTERING
   
-  clustered_umap <- DimPlot(seu_combined, reduction = "umap")  + ggtitle("Clustered UMAP") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
-  clustered_tsne <- DimPlot(seu_combined, reduction = "tsne")  + ggtitle("Clustered tSNE") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5))
+  clustered_umap <- DimPlot(seu_combined, reduction = "umap")  + ggtitle("Clustered UMAP") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
+  clustered_tsne <- DimPlot(seu_combined, reduction = "tsne")  + ggtitle("Clustered tSNE") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5))
   
   # DE ON CLUSTERS
   
@@ -287,15 +295,15 @@ combine_datasets <- function(m1, m2, m3) {
   # Heatmap of top 10 genes per cluster
   
   top10 <- seu_combined.markers %>% group_by(cluster) %>% top_n(n = 10)
-  heat_map_all <- DoHeatmap(seu_combined, features = top10$gene) + ggtitle("Heatmap of Top 10 Genes per Cluster") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5), axis.text.y = element_text(size = 15)) #  + NoLegend() 
+  heat_map_all <- DoHeatmap(seu_combined, features = top10$gene) + ggtitle("Heatmap of Top 10 Genes per Cluster") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5), axis.text.y = element_text(size = 15)) #  + NoLegend() 
   
   top_gene_clusters <- list()
   
   for (i in 1:(length(top10)-1)) {
-    top_gene_clusters[[i]] <- DotPlot(seu_combined, features = top10$gene[(1+10*(i-1)):(10+10*(i-1))]) + RotatedAxis() + coord_flip() + theme(text = element_text(size = 20), plot.title = element_text(hjust = 0.5)) #  + NoLegend() 
+    top_gene_clusters[[i]] <- DotPlot(seu_combined, features = top10$gene[(1+10*(i-1)):(10+10*(i-1))]) + RotatedAxis() + coord_flip() + theme(text = element_text(size = 5), plot.title = element_text(hjust = 0.5)) #  + NoLegend() 
   }
   
-  top_gene_clusters_all <- plot_grid(plotlist = top_gene_clusters) + ggtitle("Average Expression and Percentage Expressed of Top Genes for each Cluster") + theme(text = element_text(size = 30), plot.title = element_text(hjust = 0.5)) #  + NoLegend() 
+  top_gene_clusters_all <- plot_grid(plotlist = top_gene_clusters) + ggtitle("Average Expression and Percentage Expressed of Top Genes for each Cluster") + theme(text = element_text(size = 10), plot.title = element_text(hjust = 0.5)) #  + NoLegend() 
   
   #return(list(umis_per_cell,genes_per_cell,mitochondrial_genes_per_cell,ribosomal_genes_per_cell, umi_vs_mito, elbow_plot, pca_plot, tsne_plot, umap_plot, umap_plot_2))
   return(list(umis_per_cell_combined, genes_per_cell_combined, mitochondrial_genes_per_cell_combined, ribosomal_genes_per_cell_combined, umi_vs_mito_combined, elbow_plot, pca_plot, tsne_all, umap_all, clustered_umap, clustered_tsne, heat_map_all, top_gene_clusters_all))
