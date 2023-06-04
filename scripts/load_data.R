@@ -73,7 +73,7 @@ load_af <- function(dir) {
 
 load_kb <- function(dir) {
   
-  library("rjson")
+  #library("rjson")
   
   dir <- normalizePath(dir, mustWork = TRUE)
   m <- readMM(paste0(dir, "/matrix.mtx"))
